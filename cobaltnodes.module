@@ -42,7 +42,7 @@ function cobaltnodes_nodeapi(&$node, $op, $teaser, $page) {
 
 function cobaltnodes_json($op, $value) {
   $result = array();
-  
+
   // We're skipping the status check on purpose. As we check with the node_access
   // function later this allows administrators to access unpublished nodes.
   if ($op=='update') {
@@ -57,14 +57,14 @@ function cobaltnodes_json($op, $value) {
     $res = db_query("SELECT nid, title, type, uid, status, moderate FROM {node}
       WHERE nid = %d", $value);
   }
-  
+
   $nodes = array();
   $access_types = array(
     'r' => 'view',
     'w' => 'update',
     'd' => 'delete',
   );
-  
+
   while ($node = db_fetch_object($res)) {
     $access = '';
     foreach ($access_types as $key => $permission) {
@@ -76,9 +76,9 @@ function cobaltnodes_json($op, $value) {
       $nodes[] = array($node->nid, $node->title, $access);
     }
   }
-  
+
   $result['nodes'] = $nodes;
-  
+
   if ($op=='update') {
     $deleted = array();
     // Get deletions
@@ -88,7 +88,7 @@ function cobaltnodes_json($op, $value) {
     }
     $result['deleted'] = $deleted;
   }
-  
+
   print drupal_to_js($result);
   exit;
 }

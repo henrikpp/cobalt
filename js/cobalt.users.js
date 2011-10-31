@@ -4,7 +4,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
     'catalogs': {},
     'handlers': []
   };
-  
+
   plugin['catalogs']['users'] = {
     'update': function(last_update, callback) {
       $.getJSON(Drupal.settings.basePath + 'cobalt/data/users_json/' + Math.round((last_update/1000)), {}, function (data) {
@@ -21,7 +21,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
     },
     'update_rate': 300000
   };
-  
+
   // Add handlers
   plugin['handlers'].push({
     'id': 'user_view',
@@ -34,7 +34,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
       window.location.href = Drupal.settings.basePath + 'user/' + item.id;
     }
   });
-  
+
   plugin['handlers'].push({
     'id': 'user_edit',
     'name': Drupal.t('Edit'),
@@ -46,7 +46,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
       window.location.href = Drupal.settings.basePath + 'user/' + item.id + '/edit?destination=' + Drupal.settings.cobalt.path;
     }
   });
-  
+
   plugin['handlers'].push({
     'id': 'user_delete',
     'name': Drupal.t('Delete'),
@@ -58,6 +58,6 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
       window.location.href = Drupal.settings.basePath + 'user/' + item.id + '/delete?destination=' + Drupal.settings.cobalt.path;
     }
   });
-  
+
   cobalt.registerPlugin('cobaltusers', plugin);
 });

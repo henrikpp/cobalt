@@ -1,10 +1,10 @@
-$(document).bind('cobalt-load', function(evt, cobalt) {  
+$(document).bind('cobalt-load', function(evt, cobalt) {
   var plugin = {
     'version': 0,
     'catalogs': {},
     'handlers': []
   };
-  
+
   plugin['catalogs']['vocabularies'] = {
     'update': function(last_update, callback) {
       $.getJSON(Drupal.settings.basePath + 'cobalt/data/taxonomy_json', {}, function (data) {
@@ -26,12 +26,12 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
     },
     'update_rate': 60000
   };
-  
+
   // Insert empty catalog, the update function is handled for both catalogs in
   // the vocabularies catalog.
   plugin['catalogs']['terms'] = {};
-  
-  
+
+
   // Register handlers
   plugin['handlers'].push({
     'id': 'vocabulary_list',
@@ -44,7 +44,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
       window.location.href = Drupal.settings.basePath + 'admin/content/taxonomy/' + item.id;
     }
   });
-  
+
   plugin['handlers'].push({
     'id': 'vocabulary_edit',
     'name': Drupal.t('Edit'),
@@ -56,7 +56,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
       window.location.href = Drupal.settings.basePath + 'admin/content/taxonomy/edit/vocabulary/' + item.id + '?destination=' + Drupal.settings.cobalt.path;
     }
   });
-  
+
   plugin['handlers'].push({
     'id': 'vocabulary_add',
     'name': Drupal.t('Add terms'),
@@ -68,7 +68,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
       window.location.href = Drupal.settings.basePath + 'admin/content/taxonomy/' + item.id + '/add/term';
     }
   });
-  
+
   plugin['handlers'].push({
     'id': 'term_view',
     'name': Drupal.t('View'),
@@ -77,7 +77,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
       window.location.href = Drupal.settings.basePath + 'taxonomy/term/' + item.id;
     }
   });
-  
+
   plugin['handlers'].push({
     'id': 'term_edit',
     'name': Drupal.t('Edit'),
@@ -89,7 +89,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
       window.location.href = Drupal.settings.basePath + 'admin/content/taxonomy/edit/term/' + item.id + '?destination=' + Drupal.settings.cobalt.path;
     }
   });
-  
+
   cobalt.registerPlugin('cobalttaxonomy', plugin);
 });
 

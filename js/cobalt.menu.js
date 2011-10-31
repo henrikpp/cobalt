@@ -1,10 +1,10 @@
-$(document).bind('cobalt-load', function(evt, cobalt) {  
+$(document).bind('cobalt-load', function(evt, cobalt) {
   var plugin = {
     'version': 0,
     'catalogs': {},
     'handlers': []
   };
-  
+
   plugin['catalogs']['menu'] = {
     'update': function(last_update, callback) {
       $.getJSON(Drupal.settings.basePath + 'cobalt/data/menu_json', {}, function (data) {
@@ -24,7 +24,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
     },
     'update_rate': 60000
   };
-  
+
   var uri_from_item = function(item, omitDestination) {
     var path = item.information;
     var destination = Drupal.settings.cobalt.path;
@@ -73,7 +73,7 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
         'action': uri_from_item(item),
         'target': '_blank'
       }).appendTo('body');
-      
+
       try {
         form.submit();
       }
@@ -83,10 +83,10 @@ $(document).bind('cobalt-load', function(evt, cobalt) {
         message.append('<p>' + Drupal.t('You might be using a popup blocker, which stopped Cobalt from opening a new window.') + '</p>');
         cobalt.showHtml(message);
       }
-      
+
       $(form).remove();
     }
   });
-  
+
   cobalt.registerPlugin('cobalt_menu', plugin);
 });

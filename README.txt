@@ -12,6 +12,6 @@ The Cobalt Nodes module also provides convenient context entries like "Edit curr
 
 h2. INSTALLATION
 
-Cobalt consists of four modules. The Cobalt module contains Cobalt itself and access to the menu system, including the devel modules menu items (do you use clear cache often? Assign it a shortcut like [Ctrl+Shift+c] and life *will* get easier.). The three other modules: Cobalt Nodes, Cobalt Taxonomy and Cobalt Users provides access to exactly the stuff their names imply with sensible actions like view, edit and delete.  
+Cobalt consists of four modules. The Cobalt module contains Cobalt itself and access to the menu system, including the devel modules menu items (do you use clear cache often? Assign it a shortcut like [Ctrl+Shift+c] and life *will* get easier.). The three other modules: Cobalt Nodes, Cobalt Taxonomy and Cobalt Users provides access to exactly the stuff their names imply with sensible actions like view, edit and delete.
 
 We now have modules in place that supports lookup for menus, nodes, users and taxonomy. Nodes and users have view, edit and delete actions that can be accessed by tabbing to the right cell and pressing the up and down arrow keys.
