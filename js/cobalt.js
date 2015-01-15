@@ -1,26 +1,26 @@
 $(document).ready(function(){
   var match_count = 0, match_page_size=5, match_offset = 0,
       cobalt_visible = false, cobalt_out_visible = false,
-      matches = [], match_idx = 0, handler_idx = 0, 
+      matches = [], match_idx = 0, handler_idx = 0,
       current_text, current_action_text='', handler, item, actions, match_count=0,
-      plugins = {}, plugin_names=[], catalogs = {}, global_handlers = [], handlers = {}, 
+      plugins = {}, plugin_names=[], catalogs = {}, global_handlers = [], handlers = {},
       update_queue = [], required_updates = [];
-      
+
   var log_error = function(message, err) {
      if (typeof(window.console) != 'undefined') {
        console.error(message);
        if(err) {
-        console.log(err); 
+        console.log(err);
        }
      }
   };
-  
+
   var log_msg = function(message) {
      if (typeof(window.console) != 'undefined') {
        console.log(message);
      }
   };
-  
+
   var db = null;
   // Initialize database
   if (typeof(google) != 'undefined' && typeof(google.gears) != 'undefined') {
@@ -33,7 +33,7 @@ $(document).ready(function(){
       log_msg(Drupal.t('Failed to open database using the Google Gears api'), err);
     }
   }
-  
+
   if (!db && typeof(openDatabase)=='function') {
     try {
       var db = openDatabase('cobalt', '1.0', 'Cobalt Database', 204800);
@@ -42,14 +42,14 @@ $(document).ready(function(){
       log_msg(Drupal.t('Failed to open database using the HTML5-api'));
     }
   }
-  
+
   if (!db) {
     log_error(Drupal.t('Could not open a client-side database. Cobalt requires a browser that implements the HTML5 database api or had Google Gears installed'));
     return;
   }
-  
+
   var nullDataHandler = function(transaction, results) { };
-    
+
   var current_state = function() {
     if (typeof(Drupal.settings.cobalt) != 'undefined' &&
         typeof(Drupal.settings.cobalt.state) != 'undefined') {
@@ -59,7 +59,7 @@ $(document).ready(function(){
       return 0;
     }
   };
-    
+
   // Initialize Cobalt
   var cobalt = {
     'dbErrorHandler': function(transaction, error)
@@ -73,13 +73,13 @@ $(document).ready(function(){
     'registerPlugin': function(name, plugin) {
       plugin_names.push(name);
       plugins[name] = plugin;
-      
+
       if(typeof(plugin['catalogs'])!='undefined') {
         for(var c_name in plugin.catalogs) {
           catalogs[c_name] = plugin.catalogs[c_name];
         }
       }
-      
+
       if(typeof(plugin['handlers'])!='undefined') {
         var h_len = plugin.handlers.length;
         for(var i=0; i<h_len; i++) {
@@ -154,13 +154,13 @@ $(document).ready(function(){
       else {
         cobalt_output.empty().append(html);
       }
-      
+
       if (!cobalt_out_visible) {
         toggle_output();
       }
     }
   };
-  
+
   if (typeof(Drupal.settings.cobalt) != 'undefined' && typeof(Drupal.settings.cobalt.update) != 'undefined') {
    cobalt.updateVersion = function(transaction, name, version) {
       transaction.executeSql('UPDATE versions SET version=? WHERE name=?', [version, name], nullDataHandler,cobalt.dbErrorHandler);
@@ -184,16 +184,16 @@ $(document).ready(function(){
     db.transaction(function (transaction) {
       register_handler_use(handler, item, transaction);
       if (item.weight == null) {
-        transaction.executeSql("INSERT INTO usage_data(catalog, id, weight, abbreviation) VALUES(?,?,?,?)", 
+        transaction.executeSql("INSERT INTO usage_data(catalog, id, weight, abbreviation) VALUES(?,?,?,?)",
           [item.catalog, item.id, 1, text], nullDataHandler,cobalt.dbErrorHandler);
       }
       else {
-        transaction.executeSql("UPDATE usage_data SET weight=weight+1, abbreviation=? WHERE catalog=? AND id=?", 
+        transaction.executeSql("UPDATE usage_data SET weight=weight+1, abbreviation=? WHERE catalog=? AND id=?",
           [text, item.catalog, item.id], nullDataHandler,cobalt.dbErrorHandler);
       }
     });
   };
-  
+
   var register_handler = function(handler) {
     if (typeof(handler['data_class'])=='undefined') {
       handler['data_class'] = null;
@@ -224,7 +224,7 @@ $(document).ready(function(){
   };
 
   $(document).trigger('cobalt-load', cobalt);
-  
+
   cobalt.registerPlugin('cobalt', {
     'version': 0,
     'handlers': [
@@ -269,24 +269,24 @@ $(document).ready(function(){
       }
     ]
   });
-  
+
   db.transaction(function (transaction) {
     transaction.executeSql('CREATE TABLE IF NOT EXISTS versions(' +
-      'name TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 0, ' + 
+      'name TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 0, ' +
       'CONSTRAINT pk_versions PRIMARY KEY(name));', [], nullDataHandler,cobalt.dbErrorHandler);
     transaction.executeSql('CREATE TABLE IF NOT EXISTS entries(' +
-      'catalog TEXT NOT NULL, id TEXT NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL DEFAULT "", data_class TEXT NOT NULL, ' + 
-      'state INTEGER NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1, ' + 
+      'catalog TEXT NOT NULL, id TEXT NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL DEFAULT "", data_class TEXT NOT NULL, ' +
+      'state INTEGER NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1, ' +
       'CONSTRAINT pk_entries PRIMARY KEY(catalog, id));', [], nullDataHandler,cobalt.dbErrorHandler);
     transaction.executeSql('DELETE FROM entries WHERE catalog=?', ['*temporary*'], nullDataHandler, cobalt.dbErrorHandler);
     transaction.executeSql('CREATE TABLE IF NOT EXISTS key_bindings(' +
-      'binding TEXT NOT NULL, catalog TEXT NOT NULL, id TEXT NOT NULL, handler TEXT NOT NULL, ' + 
-      'state INTEGER NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1, ' + 
+      'binding TEXT NOT NULL, catalog TEXT NOT NULL, id TEXT NOT NULL, handler TEXT NOT NULL, ' +
+      'state INTEGER NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1, ' +
       'CONSTRAINT pk_bindings PRIMARY KEY(binding, state));', [], nullDataHandler,cobalt.dbErrorHandler);
-    transaction.executeSql('CREATE TABLE IF NOT EXISTS usage_data(catalog TEXT NOT NULL, id TEXT NOT NULL, ' + 
+    transaction.executeSql('CREATE TABLE IF NOT EXISTS usage_data(catalog TEXT NOT NULL, id TEXT NOT NULL, ' +
       'weight INTEGER NOT NULL DEFAULT 0, abbreviation TEXT NOT NULL DEFAULT "",' +
       'CONSTRAINT pk_usage_data PRIMARY KEY(catalog, id));', [], nullDataHandler,cobalt.dbErrorHandler);
-    transaction.executeSql('CREATE TABLE IF NOT EXISTS handler_usage_data(catalog TEXT NOT NULL, id TEXT NOT NULL, ' + 
+    transaction.executeSql('CREATE TABLE IF NOT EXISTS handler_usage_data(catalog TEXT NOT NULL, id TEXT NOT NULL, ' +
       'handler TEXT NOT NULL, weight INTEGER NOT NULL DEFAULT 0,' +
       'CONSTRAINT pk_handler_usage_data PRIMARY KEY(catalog, id, handler));', [], nullDataHandler,cobalt.dbErrorHandler);
     transaction.executeSql('CREATE INDEX IF NOT EXISTS idx_entries_catalog ON entries(catalog);', [], nullDataHandler,cobalt.dbErrorHandler);
@@ -296,9 +296,9 @@ $(document).ready(function(){
     transaction.executeSql('CREATE TABLE IF NOT EXISTS catalogs(' +
       'name TEXT NOT NULL PRIMARY KEY, updated INTEGER NOT NULL DEFAULT 0, state INTEGER NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1, uninstall INTEGER NOT NULL DEFAULT 0);', [], nullDataHandler,cobalt.dbErrorHandler);
   });
-  
+
   var cobalt_output = $('<div id="cobalt-out"></div>').appendTo('body').hide();
-  
+
   var bind_key = function (binding, catalog, id, handler) {
     $(document).bind('keydown', binding, function(){
       cobalt.loadEntry(catalog, id, function(item) {
@@ -315,7 +315,7 @@ $(document).ready(function(){
       });
     });
   };
-  
+
   var toggle_output = function(arg) {
     if (cobalt_out_visible) {
       cobalt_output.hide();
@@ -326,7 +326,7 @@ $(document).ready(function(){
       cobalt_out_visible = true;
     }
   };
-  
+
   var keypress_reaction = function() {
     if(cobalt_input.val()==current_text) {
       return;
@@ -341,7 +341,7 @@ $(document).ready(function(){
       clear_ac();
     }
   };
-  
+
   var action_keypress_reaction = function() {
     if(cobalt_h_input.val()==current_action_text) {
       return;
@@ -370,10 +370,10 @@ $(document).ready(function(){
     }
     var like_expr = '%' + current_text + '%';
     db.transaction(function (transaction) {
-      transaction.executeSql("SELECT e.*, u.weight FROM entries AS e " + 
+      transaction.executeSql("SELECT e.*, u.weight FROM entries AS e " +
         "LEFT OUTER JOIN usage_data AS u ON (e.catalog=u.catalog AND e.id=u.id) " +
-        "WHERE e.active=1 AND (u.abbreviation = ? OR e.name LIKE ?) " + 
-        "ORDER BY nullif(?,u.abbreviation), nullif(?,e.name), u.weight DESC LIMIT ?,?;", [ 
+        "WHERE e.active=1 AND (u.abbreviation = ? OR e.name LIKE ?) " +
+        "ORDER BY nullif(?,u.abbreviation), nullif(?,e.name), u.weight DESC LIMIT ?,?;", [
         current_text, like_expr, current_text, current_text, match_offset, match_page_size ], lookup_finished,cobalt.dbErrorHandler);
     });
   };
@@ -396,7 +396,7 @@ $(document).ready(function(){
         $('<li class="ac-opt-' + i + '"></li>').html(title).appendTo(cobalt_ac);
       }
       matches = results.rows;
-      
+
       //Only count for paging when we're not already offsetting the result and
       //have a match count equal to the page size
       if (match_offset) {
@@ -405,9 +405,9 @@ $(document).ready(function(){
       else if (matches.length==match_page_size) {
         var like_expr = '%' + current_text + '%';
         db.transaction(function (transaction) {
-          transaction.executeSql("SELECT COUNT(*) as match_count FROM entries AS e " + 
+          transaction.executeSql("SELECT COUNT(*) as match_count FROM entries AS e " +
             "LEFT OUTER JOIN usage_data AS u ON (e.catalog=u.catalog AND e.id=u.id) " +
-            "WHERE e.active=1 AND (u.abbreviation = ? OR e.name LIKE ?);", [ 
+            "WHERE e.active=1 AND (u.abbreviation = ? OR e.name LIKE ?);", [
             current_text, like_expr ], function(transaction, results) {
               if (results.rows.length) {
                 match_count = results.rows.item(0).match_count;
@@ -428,7 +428,7 @@ $(document).ready(function(){
 
     ac_select(0);
   };
-  
+
   var update_pager = function(new_match_count) {
     match_count = new_match_count;
     cobalt_paging.hide().empty();
@@ -467,7 +467,7 @@ $(document).ready(function(){
     $('#cobalt .left .inner').attr('class','inner cobalt-item-' + item.data_class);
     $('#cobalt .left label').text(item.name).show();
     $('#cobalt .ac-opt-' + match_idx).addClass('active');
-    
+
     action_candidates(item, function(candidates){
       actions = candidates;
       set_handler(0, true);
@@ -479,7 +479,7 @@ $(document).ready(function(){
       add_applicable = function(handler) {
         // Check if the handler matches the current_action_text (from closure),
         // or run the handlers own applicability check if it has one.
-        if ((current_action_text=='' || handler['name'].toLowerCase().indexOf(current_action_text)!=-1) && 
+        if ((current_action_text=='' || handler['name'].toLowerCase().indexOf(current_action_text)!=-1) &&
             (!handler['applicable'] || handler.applicable(current_text, item))) {
           candidates.push(handler);
         }
@@ -501,7 +501,7 @@ $(document).ready(function(){
 
     // Load the usage data for the candidates so that we may sort them
     db.transaction(function (transaction) {
-      transaction.executeSql("SELECT handler, weight FROM handler_usage_data WHERE catalog=? AND id=?", 
+      transaction.executeSql("SELECT handler, weight FROM handler_usage_data WHERE catalog=? AND id=?",
         [item.catalog, item.id], function(transaction, results) {
           rc = results.rows.length;
           cc = candidates.length;
@@ -541,7 +541,7 @@ $(document).ready(function(){
         $('<li class="action-opt-' + i + '"></l i>').html(actions[i]['name']).appendTo(cobalt_actions);
       }
     }
-    
+
     if (idx<0 || idx >= actions.length) {
       return;
     }
@@ -591,7 +591,7 @@ $(document).ready(function(){
   var hide = function() {
     toggle('hide');
   };
-  
+
   var init = function() {
     $(document).trigger('cobalt-init', cobalt);
 
@@ -680,12 +680,12 @@ $(document).ready(function(){
       bind('keydown', 'Alt+left', function(){ ac_page(match_offset-match_page_size); return false; }).
       bind('keydown', 'Alt+right', function(){ ac_page(match_offset+match_page_size); return false; }).
       bind('keyup', function(){ keypress_reaction(); return false; }).
-      bind('focus', function() { 
+      bind('focus', function() {
         if (matches && matches.length) {
           cobalt_ac.show();
           cobalt_paging.show();
         }
-        cobalt_actions.hide(); 
+        cobalt_actions.hide();
       });
     cobalt_h_input.bind('keydown', 'up', function(){ set_handler(handler_idx-1); return false; }).
       bind('keydown', 'down', function(){ set_handler(handler_idx+1); return false; }).
@@ -706,10 +706,10 @@ $(document).ready(function(){
         .bind('keydown', 'Ctrl+space', toggle);
     }
   };
-  
+
   // Initialize GUI
   var cb = $('<div id="cobalt">'+
-    '<div class="cell left"><div class="inner"><input type="text" id="cobalt-input" /><label></label></div></div>'+ 
+    '<div class="cell left"><div class="inner"><input type="text" id="cobalt-input" /><label></label></div></div>'+
     '<div class="cell right"><div class="inner"><input type="text" id="cobalt-handler-input" /><label></label></div></div>'+
     '<ol class="cobalt-paging"></ol><ul class="cobalt-autocomplete"></ul><ul class="cobalt-actions"></ul></div>').appendTo('body').hide();
   var cobalt_input = $('#cobalt-input');
@@ -718,7 +718,7 @@ $(document).ready(function(){
   var cobalt_actions = $('#cobalt .cobalt-actions');
   var cobalt_paging = $('#cobalt .cobalt-paging');
   $('#cobalt .right label').hide();
-  
+
   // Check if we need to update anything before initializing
   db.transaction(function (transaction) {
     transaction.executeSql('SELECT name, version FROM versions', [], function(transaction, results) {
@@ -727,7 +727,7 @@ $(document).ready(function(){
         var vi = results.rows.item(i);
         v[vi.name] = vi.version;
       }
-      
+
       db.transaction(function (transaction) {
         var plugin_count = plugin_names.length;
         for (var i=0; i<plugin_count; i++) {
@@ -739,7 +739,7 @@ $(document).ready(function(){
             required_updates.push([n, v[n], plugins[n].version]);
           }
         }
-        
+
         if (required_updates.length) {
           var update_notice = function () {
             var update_url = Drupal.settings.basePath + 'cobalt/update';

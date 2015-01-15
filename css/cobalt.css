@@ -11,18 +11,18 @@
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
   -webkit-box-shadow: rgba(255, 255, 255, 0.5) 1px 1px 5px;
-  
+
   position: fixed;
   top: 38%;
   left: 50%;
   margin: -85px 0 0 -165px;
   width: 330px;
   padding: 5px 0;
-  
+
   font-size: 12px;
   font-family: 'Lucida Grande', sans-serif;
   line-height: 16px;
-  
+
   z-index: 1000;
 }
 
